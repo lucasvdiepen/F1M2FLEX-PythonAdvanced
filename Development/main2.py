@@ -9,6 +9,9 @@ defaultAppleSprite = pygame.image.load("../Art/spr_Apple.png")
 
 # Necessary setup before you can start using pygame functionalities:
 pygame.init()
+pygame.font.init()
+
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -27,10 +30,12 @@ class Apple:
     sprite = None
     rectangle = None
 
-    def __init__(self, _gives_points, x = random.randint(0, SCREEN_WIDTH),  y = random.randint(0, SCREEN_HEIGHT), _sprite = defaultAppleSprite):
+    def __init__(self, _gives_points, x = -1,  y = -1, _sprite = defaultAppleSprite):
         self.gives_points = _gives_points
         self.sprite = _sprite
         self.rectangle = _sprite.get_rect()
+        if(x == -1): x = random.randint(0, SCREEN_WIDTH - 30)
+        if(y == -1): y = random.randint(0, SCREEN_HEIGHT - 50)
         self.rectangle.x = x
         self.rectangle.y = y
 
@@ -49,6 +54,8 @@ class Player:
         self.speed = _speed
         self.sprite = _sprite
         self.rectangle = _sprite.get_rect()
+        self.rectangle.x = SCREEN_WIDTH / 2
+        self.rectangle.y = SCREEN_HEIGHT / 2
 
     def Update(self):
         #Player Movement
@@ -75,6 +82,16 @@ class Player:
     def Draw(self):
         SCREEN.blit(self.sprite, self.rectangle)
 
+    def CollisionCheck(self):
+        #print(len(self.rectangle.collidelist(apples)))
+        for i in range(len(apples) - 1, -1, -1):#needs to count down not up
+            if(self.rectangle.colliderect(apples[i].rectangle)):
+                print("Collision with apple")
+                self.points += apples[i].gives_points
+                apples.pop(i)
+                
+        
+
 player = Player(10, 5)
 
 apples = []
@@ -82,7 +99,6 @@ apples = []
 #Add 3 apples
 for i in range(3):
     apples.append(Apple(5))
-    sleep(1)
 
 for apple in apples:
     print("apple x: " + str(apple.rectangle.x) + " y: " + str(apple.rectangle.y))
@@ -101,18 +117,28 @@ while IS_RUNNING:
     # ------------------------------------------------
     player.Update()
     
-
     # ------------------------------------------------
     # DRAWING INSTRUCTIONS
     # ------------------------------------------------
     SCREEN.fill(BG_COLOUR)
     #Draw player
     player.Draw()
+
     #Draw apples
     for apple in apples:
         apple.Draw()
+
+    #Draws points on screen
+    text_surface = myfont.render("Points: " + str(player.points), False, (255, 255, 255))
+    SCREEN.blit(text_surface, (10, 5))
+
     pygame.display.flip()
 
+    #Check for collisions
+    player.CollisionCheck()
+
+
+    
 
     # Prevent the game from running way too fast by restricting the amount of update cycles made per second.
     # The program basically waits a certain amount of time before it continues.
