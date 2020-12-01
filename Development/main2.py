@@ -62,20 +62,16 @@ class Player:
         KEYS_DOWN = pygame.key.get_pressed()
 
         if (KEYS_DOWN[K_UP]):
-            print(str(self.rectangle.y))
             if(self.rectangle.y >= 0):
                 self.rectangle.y -= self.speed
         elif (KEYS_DOWN[K_DOWN]):
-            print(str(self.rectangle.y))
             if(self.rectangle.y <= SCREEN_HEIGHT - 50):
                 self.rectangle.y += self.speed
 
         if (KEYS_DOWN[K_LEFT]):
-            print(str(self.rectangle.x))
             if(self.rectangle.x >= 0):
                 self.rectangle.x -= self.speed
         elif (KEYS_DOWN[K_RIGHT]):
-            print(str(self.rectangle.x))
             if(self.rectangle.x <= SCREEN_WIDTH - 30):
                 self.rectangle.x += self.speed
 
@@ -83,10 +79,9 @@ class Player:
         SCREEN.blit(self.sprite, self.rectangle)
 
     def CollisionCheck(self):
-        #print(len(self.rectangle.collidelist(apples)))
-        for i in range(len(apples) - 1, -1, -1):#needs to count down not up
+        #check if player collided with apples
+        for i in range(len(apples) - 1, -1, -1):
             if(self.rectangle.colliderect(apples[i].rectangle)):
-                print("Collision with apple")
                 self.points += apples[i].gives_points
                 apples.pop(i)
                 
@@ -96,31 +91,23 @@ player = Player(10, 5)
 
 apples = []
 
-#Add 3 apples
+#Add 3 apples on random position
 for i in range(3):
     apples.append(Apple(5))
 
-for apple in apples:
-    print("apple x: " + str(apple.rectangle.x) + " y: " + str(apple.rectangle.y))
-
 while IS_RUNNING:
-    # ------------------------------------------------
-    # EVENT HANDLING:
-    # ------------------------------------------------
+    #Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             IS_RUNNING = False
 
 
-    # ------------------------------------------------
-    # UPDATE GAME LOGIC:
-    # ------------------------------------------------
+    #Update game
     player.Update()
     
-    # ------------------------------------------------
-    # DRAWING INSTRUCTIONS
-    # ------------------------------------------------
+    #Draw
     SCREEN.fill(BG_COLOUR)
+    
     #Draw player
     player.Draw()
 
@@ -136,9 +123,6 @@ while IS_RUNNING:
 
     #Check for collisions
     player.CollisionCheck()
-
-
-    
 
     # Prevent the game from running way too fast by restricting the amount of update cycles made per second.
     # The program basically waits a certain amount of time before it continues.
