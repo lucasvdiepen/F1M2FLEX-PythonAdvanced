@@ -87,7 +87,7 @@ class Player:
                 
         
 
-player = Player(10, 5)
+player = Player(10, 5, pygame.image.load("../Art/spr_Player2.png"))
 
 apples = []
 
@@ -107,7 +107,7 @@ while IS_RUNNING:
     
     #Draw
     SCREEN.fill(BG_COLOUR)
-    
+
     #Draw player
     player.Draw()
 
