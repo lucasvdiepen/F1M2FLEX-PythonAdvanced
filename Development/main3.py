@@ -29,17 +29,17 @@ class BaseObject:
     sprite = None
     rectangle = None
 
-    def __init__(self, _sprite, Screen, _x = -1, _y = -1):
+    def __init__(self, _sprite, ScreenSize, _x = -1, _y = -1):
         self.sprite = _sprite
         self.rectangle = _sprite.get_rect()
-        if(_x == -1 and _y == -1): self.SetRandomPosition(Screen)
+        if(_x == -1 and _y == -1): self.SetRandomPosition(ScreenSize)
         else:
             self.rectangle.x = _x
             self.rectangle.y = _y
 
-    def SetRandomPosition(self, Screen):
-        self.rectangle.x = random.randint(0, Screen[0] - 30)
-        self.rectangle.y = random.randint(0, Screen[1] - 50)
+    def SetRandomPosition(self, ScreenSize):
+        self.rectangle.x = random.randint(0, ScreenSize[0] - 30)
+        self.rectangle.y = random.randint(0, ScreenSize[1] - 50)
 
     def Draw(self, _screen):
         _screen.blit(self.sprite, self.rectangle)
@@ -47,8 +47,8 @@ class BaseObject:
 class Apple(BaseObject):
     gives_points = 0
 
-    def __init__(self, _gives_points, Screen, _sprite = defaultAppleSprite, x = -1,  y = -1):
-        super().__init__(_sprite, Screen, x, y)
+    def __init__(self, _gives_points, ScreenSize, _sprite = defaultAppleSprite, x = -1,  y = -1):
+        super().__init__(_sprite, ScreenSize, x, y)
         self.gives_points = _gives_points
         
 
@@ -57,28 +57,31 @@ class Player(BaseObject):
     points = 0
     speed = 0
 
-    def __init__(self, _lives, _speed, Screen, _sprite = defaultPlayerSprite, x = -1, y = -1):
+    def __init__(self, _lives, _speed, ScreenSize, _sprite = defaultPlayerSprite, x = -1, y = -1):
         if(x == -1 and y == -1):
-            x = Screen[0] / 2
-            y = Screen[1] / 2
-        super().__init__(_sprite, Screen, x, y)
+            x = ScreenSize[0] / 2
+            y = ScreenSize[1] / 2
+        super().__init__(_sprite, ScreenSize, x, y)
         self.lives = _lives
         self.speed = _speed
 
-    def Update(self, KEYS_DOWN):
-        #Player Movement
+    def Update(self, ScreenSize):
+        #Get player input
+        KEYS_DOWN = pygame.key.get_pressed()
+
+        #Move player
         if (KEYS_DOWN[K_UP]):
             if(self.rectangle.y >= 0):
                 self.rectangle.y -= self.speed
         elif (KEYS_DOWN[K_DOWN]):
-            if(self.rectangle.y <= SCREEN_HEIGHT - 50):
+            if(self.rectangle.y <= ScreenSize[1] - 50):
                 self.rectangle.y += self.speed
 
         if (KEYS_DOWN[K_LEFT]):
             if(self.rectangle.x >= 0):
                 self.rectangle.x -= self.speed
         elif (KEYS_DOWN[K_RIGHT]):
-            if(self.rectangle.x <= SCREEN_WIDTH - 30):
+            if(self.rectangle.x <= ScreenSize[0] - 30):
                 self.rectangle.x += self.speed
 
     def CollisionCheck(self):
@@ -99,10 +102,6 @@ for i in range(3):
     apples.append(Apple(5, SCREEN_SIZE))
 
 while IS_RUNNING:
-
-    #Get player input
-    KEYS_DOWN = pygame.key.get_pressed()
-
     #Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -110,7 +109,7 @@ while IS_RUNNING:
 
 
     #Update game
-    player.Update(KEYS_DOWN)
+    player.Update(SCREEN_SIZE)
 
     #Check for collisions
     player.CollisionCheck()
